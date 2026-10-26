@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>贷款测算 · 滑块组件 Demo</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    min-height: 100vh;
+    padding: 40px 20px;
+    background:
+      radial-gradient(60% 50% at 50% 0%, rgba(95, 232, 198, .13), transparent 65%),
+      radial-gradient(50% 45% at 85% 95%, rgba(155, 238, 106, .08), transparent 60%),
+      #08080a;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    color: #f4f4f6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- 手机外框 ---------- */
+  .phone {
+    position: relative;
+    width: 390px;
+    height: 844px;
+    flex: none;
+    padding: 0 0 8px;
+    border-radius: 52px;
+    background: #0b0b0d;
+    border: 9px solid #1c1c22;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, .07),
+      0 40px 90px -30px rgba(0, 0, 0, .95),
+      0 0 80px -20px rgba(95, 232, 198, .16);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+  }
+  .phone::-webkit-scrollbar { display: none; }
+
+  /* 刘海 */
+  .notch {
+    position: absolute;
+    top: 11px; left: 50%;
+    transform: translateX(-50%);
+    width: 108px; height: 27px;
+    border-radius: 999px;
+    background: #000;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  /* 状态栏 */
+  .statusbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 17px 30px 6px;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: .1px;
+    color: #f4f4f6;
+  }
+  .statusbar .icons { display: flex; align-items: center; gap: 5px; }
+  .statusbar svg { display: block; }
+
+  /* 组件容器 */
+  .stage { padding: 10px 12px 26px; }
+
+  /* home indicator */
+  .home-bar {
+    width: 132px; height: 5px;
+    margin: 6px auto 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .28);
+  }
+
+  /* ---------- 页面说明 ---------- */
+  .caption {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+    color: #6c6c76;
+    text-align: center;
+  }
+  .caption code {
+    padding: 3px 7px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, .06);
+    color: #9bee6a;
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 11.5px;
+  }
+
+  @media (max-width: 520px), (max-height: 900px) {
+    body { padding: 0; display: block; background: #0b0b0d; }
+    .phone {
+      width: 100%; height: auto; min-height: 100vh;
+      border: 0; border-radius: 0; box-shadow: none;
+    }
+    .notch { display: none; }
+    .caption { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <div class="statusbar">
+    <span>9:41</span>
+    <span class="icons">
+      <!-- 信号 -->
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="none">
+        <rect x="0" y="7.5" width="3" height="3.5" rx="1" fill="#f4f4f6"/>
+        <rect x="4.6" y="5.5" width="3" height="5.5" rx="1" fill="#f4f4f6"/>
+        <rect x="9.2" y="3" width="3" height="8" rx="1" fill="#f4f4f6"/>
+        <rect x="13.8" y="0" width="3" height="11" rx="1" fill="#f4f4f6" opacity=".45"/>
+      </svg>
+      <!-- WiFi -->
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="none">
+        <path d="M8 9.6 6.15 7.6a2.7 2.7 0 0 1 3.7 0L8 9.6Z" fill="#f4f4f6"/>
+        <path d="M8 4.4c1.5 0 2.9.58 3.95 1.53l1.2-1.3A7.5 7.5 0 0 0 8 2.6a7.5 7.5 0 0 0-5.15 2.03l1.2 1.3A5.7 5.7 0 0 1 8 4.4Z" fill="#f4f4f6" opacity=".9"/>
+        <path d="M8 2.6c2.2 0 4.2.86 5.7 2.27l.9-.98A9.5 9.5 0 0 0 8 .8 9.5 9.5 0 0 0 1.4 3.9l.9.97A8.1 8.1 0 0 1 8 2.6Z" fill="#f4f4f6" opacity=".65"/>
+      </svg>
+      <!-- 电池 -->
+      <svg width="26" height="12" viewBox="0 0 26 12" fill="none">
+        <rect x=".6" y=".6" width="22" height="10.8" rx="3.2" stroke="#f4f4f6" stroke-opacity=".38" stroke-width="1.1"/>
+        <rect x="2.3" y="2.3" width="16" height="7.4" rx="2" fill="#f4f4f6"/>
+        <path d="M24.2 4.2v3.6c.9-.32 1.4-1 1.4-1.8s-.5-1.48-1.4-1.8Z" fill="#f4f4f6" fill-opacity=".45"/>
+      </svg>
+    </span>
+  </div>
+
+  <div class="stage">
+    <!-- ▼▼▼ 组件本体：一行标签即可嵌入 ▼▼▼ -->
+    <loan-calculator
+      amount="300000"
+      rate="4.2"
+      years="20"
+      currency="¥">
+    </loan-calculator>
+    <!-- ▲▲▲ 组件本体 ▲▲▲ -->
+  </div>
+
+  <div class="home-bar"></div>
+</div>
+
+<div class="caption">
+  核心组件仅在 <code>loan-calculator.js</code> · 本页只是演示外壳
+</div>
+
+<script src="loan-calculator.js"></script>
+<script>
+  // 演示宿主如何接收实时计算结果
+  document.addEventListener('loan-change', function (e) {
+    var d = e.detail;
+    console.log(
+      '[loan-change] 月供 ' + d.monthly.toFixed(2) +
+      ' | 总额 ' + d.total.toFixed(2) +
+      ' | 利息 ' + d.interest.toFixed(2) +
+      ' | ' + d.periods + '期'
+    );
+  });
+</script>
+
+</body>
+</html>
